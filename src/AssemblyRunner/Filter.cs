@@ -6,6 +6,9 @@ using Xunit.Abstractions;
 
 namespace Compori.Testing.Xunit.AssemblyRunner
 {
+    /// <summary>
+    /// Class Filter.
+    /// </summary>
     public class Filter
     {
         /// <summary>
@@ -99,14 +102,34 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         }
 
         /// <summary>
-        /// Matches the specified assembly location.
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing 
+        /// algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            var hashkey = 
+                (this.AssemblyLocation ?? "null") + ":"
+                + (this.Case ?? "null") + ":"
+                + (this.ClassName ?? "null") + ":"
+                + (this.TraitName ?? "null") + ":"
+                + (this.TraitValue ?? "null");
+
+            return hashkey.GetHashCode();
+        }
+
+        /// <summary>
+        /// Checks if this filter instance matches against the parameters.
+        /// 
+        /// Not set filter properties will not checked.
         /// </summary>
         /// <param name="assemblyLocation">The assembly location.</param>
         /// <param name="testCase">The test case.</param>
-        /// <returns><c>true</c> if filter matches test case, <c>false</c> otherwise.</returns>
-        public bool Match(string assemblyLocation, ITestCase testCase)
+        /// <param name="testClass">The test class.</param>
+        /// <param name="traits">The traits.</param>
+        /// <returns><c>true</c> if this filter instance matches against parameter, <c>false</c> otherwise.</returns>
+        public bool Match(string assemblyLocation, string testCase, string testClass, Dictionary<string, List<string>> traits)
         {
-
             //
             // Test assembly location matching
             //
@@ -118,7 +141,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
             //
             // Test case matching
             //
-            if (!string.IsNullOrEmpty(this.Case) && !this.Case.Equals(testCase.DisplayName))
+            if (!string.IsNullOrEmpty(this.Case) && !this.Case.Equals(testCase))
             {
                 return false;
             }
@@ -126,7 +149,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
             //
             // Test class matching
             //
-            if (!string.IsNullOrEmpty(this.ClassName) && !this.Case.Equals(testCase.TestMethod.TestClass.Class.Name))
+            if (!string.IsNullOrEmpty(this.ClassName) && !this.ClassName.Equals(testClass))
             {
                 return false;
             }
@@ -136,19 +159,37 @@ namespace Compori.Testing.Xunit.AssemblyRunner
             //
             if (!string.IsNullOrEmpty(this.TraitName))
             {
-                if(!testCase.Traits.ContainsKey(this.TraitName))
+                if(traits == null)
                 {
                     return false;
                 }
 
-                if (!string.IsNullOrEmpty(this.TraitValue) && !testCase.Traits[this.TraitName].Contains(this.TraitValue))
+                if (!traits.ContainsKey(this.TraitName))
+                {
+                    return false;
+                }
+
+                if (!string.IsNullOrEmpty(this.TraitValue) && !traits[this.TraitName].Contains(this.TraitValue))
                 {
                     return false;
                 }
             }
 
-            // seems to fit.
             return true;
+        }
+
+        /// <summary>
+        /// Matches the specified assembly location.
+        /// </summary>
+        /// <param name="assemblyLocation">The assembly location.</param>
+        /// <param name="testCase">The test case.</param>
+        /// <returns><c>true</c> if filter matches test case, <c>false</c> otherwise.</returns>
+        public bool Match(string assemblyLocation, ITestCase testCase)
+        {
+            return this.Match(assemblyLocation,
+                testCase?.DisplayName,
+                testCase?.TestMethod?.TestClass?.Class?.Name,
+                testCase?.Traits);
         }
     }
 }
