@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Compori.Testing.Xunit.AssemblyRunner
 {
+    /// <summary>
+    /// Interface IResultSummary
+    /// </summary>
     public interface IResultSummary
     {
         /// <summary>

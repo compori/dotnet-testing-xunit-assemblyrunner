@@ -8,6 +8,9 @@ using Xunit.Runners;
 
 namespace Compori.Testing.Xunit.AssemblyRunner
 {
+    /// <summary>
+    /// Class Runner.
+    /// </summary>
     public class Runner
     {
         /// <summary>
@@ -117,7 +120,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <param name="info">The discovery complete information.</param>
         private void OnDiscoveryCompleteInternal(Result result, DiscoveryCompleteInfo info)
         {
-            result.SetDiscoveryCompleteInfo(info);
+            result.SetDiscoveryCompleteInfo(info.TestCasesDiscovered, info.TestCasesToRun);
 
             this.OnAssemblyDiscoveryComplete?.Invoke(result, info);
         }

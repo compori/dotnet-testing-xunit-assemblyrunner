@@ -5,12 +5,17 @@ using System.Text;
 
 namespace Compori.Testing.Xunit.AssemblyRunner
 {
+    /// <summary>
+    /// Class ResultSummary.
+    /// Implements the <see cref="IResultSummary" />
+    /// </summary>
+    /// <seealso cref="IResultSummary" />
     public class ResultSummary : IResultSummary
     {
         /// <summary>
         /// The results
         /// </summary>
-        private Dictionary<string, IResult> results;
+        private readonly Dictionary<string, IResult> results;
         
         /// <summary>
         /// The lock object
@@ -44,7 +49,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <summary>
         /// Adds the specified result.
         /// </summary>
-        /// <param name="result">The result.</param>
+        /// <value>The results.</value>
         public IList<IResult> Results
         {
             get

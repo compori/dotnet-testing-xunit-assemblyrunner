@@ -6,6 +6,11 @@ using Xunit.Runners;
 
 namespace Compori.Testing.Xunit.AssemblyRunner
 {
+    /// <summary>
+    /// Class Result.
+    /// Implements the <see cref="IResult" />
+    /// </summary>
+    /// <seealso cref="IResult" />
     public class Result : IResult
     {
         /// <summary>
@@ -183,13 +188,14 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <summary>
         /// Sets the discovery complete information.
         /// </summary>
-        /// <param name="info">The information.</param>
-        public void SetDiscoveryCompleteInfo(DiscoveryCompleteInfo info)
+        /// <param name="testCasesDiscovered">The test cases discovered.</param>
+        /// <param name="testCasesToRun">The test cases to run.</param>
+        public void SetDiscoveryCompleteInfo(int testCasesDiscovered, int testCasesToRun)
         {
             lock (lockObj)
             {
-                this.Runnable = info.TestCasesToRun;
-                this.Discovered = info.TestCasesDiscovered;
+                this.Runnable = testCasesToRun;
+                this.Discovered = testCasesDiscovered;
             }
         }
 
@@ -256,75 +262,5 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 this.finishedTests.Add(info);
             }
         }
-
-        #region IResult Implementation
-
-        /// <summary>
-        /// Gets the execution time.
-        /// </summary>
-        /// <value>The execution time.</value>
-        TimeSpan IResult.ExecutionTime => this.ExecutionTime;
-
-        /// <summary>
-        /// Gets the total tests count.
-        /// </summary>
-        /// <value>The total.</value>
-        int IResult.Total => this.Total;
-
-        /// <summary>
-        /// Gets the failed tests count.
-        /// </summary>
-        /// <value>The failed.</value>
-        int IResult.Failed => this.Failed;
-
-        /// <summary>
-        /// Gets the skipped tests count.
-        /// </summary>
-        /// <value>The tests skipped.</value>
-        int IResult.Skipped => this.Skipped;
-
-        /// <summary>
-        /// Gets the count of discovered tests.
-        /// </summary>
-        /// <value>The discovered.</value>
-        int IResult.Discovered => this.Discovered;
-
-        /// <summary>
-        /// Gets the count of runnable tests.
-        /// </summary>
-        /// <value>The runnable.</value>
-        int IResult.Runnable => this.Runnable;
-
-        /// <summary>
-        /// Gets the assembly location.
-        /// </summary>
-        /// <value>The assembly location.</value>
-        string IResult.AssemblyLocation => this.AssemblyLocation;
-
-        /// <summary>
-        /// Gets the skipped tests.
-        /// </summary>
-        /// <value>The skipped tests.</value>
-        IList<TestSkippedInfo> IResult.SkippedTests => this.SkippedTests;
-
-        /// <summary>
-        /// Gets the passed tests.
-        /// </summary>
-        /// <value>The passed tests.</value>
-        IList<TestPassedInfo> IResult.PassedTests => this.PassedTests;
-
-        /// <summary>
-        /// Gets the failed tests.
-        /// </summary>
-        /// <value>The failed tests.</value>
-        IList<TestFailedInfo> IResult.FailedTests => this.FailedTests;
-
-        /// <summary>
-        /// Gets the finished tests.
-        /// </summary>
-        /// <value>The finished tests.</value>
-        IList<TestFinishedInfo> IResult.FinishedTests => this.FinishedTests;
-
-        #endregion
     }
 }
