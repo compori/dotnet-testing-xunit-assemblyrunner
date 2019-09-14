@@ -103,5 +103,93 @@ namespace AssemblyRunnerTests
         {
             Assert.Equal(expect, value.GetHashCode());
         }
+
+        public static IEnumerable<object[]> GetMatchTestData()
+        {
+            yield return new object[] { true, new Filter { }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { false, new Filter { AssemblyLocation = "xyz.dll" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { true, new Filter { AssemblyLocation = "abc.dll" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { false, new Filter { Case = "TestMyCase" }, "abc.dll", "TestYourCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { true, new Filter { Case = "TestMyCase" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { false, new Filter { ClassName = "TestMyClass" }, "abc.dll", "TestMyCase", "TestYourClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { true, new Filter { ClassName = "TestMyClass" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+
+            yield return new object[] { false, new Filter { TraitName = "MyTraitName" }, "abc.dll", "TestMyCase", "TestMyClass", null };
+            yield return new object[] { false, new Filter { TraitName = "MyTraitName" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>() };
+            yield return new object[] { false, new Filter { TraitName = "MyTraitName" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                { {"YourTraitName", new List<string>() } } };
+            yield return new object[] { true, new Filter { TraitName = "MyTraitName" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                { {"MyTraitName", new List<string>() } } };
+            yield return new object[] { true, new Filter { TraitName = "MyTraitName" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                { {"MyTraitName", new List<string>() }, {"YourTraitName", new List<string>() }} };
+
+            yield return new object[] { false, new Filter { TraitValue = "MyTraitValue" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                {
+                    { "MyTraitName", new List<string>() { "Value1", "Value2" } },
+                    { "YourTraitName", new List<string>() { "Value1" } }
+            } };
+            yield return new object[] { false, new Filter { TraitValue = "MyTraitValue" }, "abc.dll", "TestMyCase", "TestMyClass", null };
+            yield return new object[] { true, new Filter { TraitValue = "MyTraitValue" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                {
+                    { "MyTraitName", new List<string>() { "Value1", "Value2" } },
+                    { "YourTraitName", new List<string>() { "MyTraitValue" } }
+                }
+            };
+            yield return new object[] { false, new Filter { TraitName = "MyTraitName", TraitValue = "MyTraitValue" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                {
+                    { "MyTraitName", new List<string>() { "Value1", "Value2" } },
+                    { "YourTraitName", new List<string>() { "MyTraitValue" } }
+                }
+            };
+            yield return new object[] { true, new Filter { TraitName = "MyTraitName", TraitValue = "MyTraitValue" }, "abc.dll", "TestMyCase", "TestMyClass", new Dictionary<string, List<string>>()
+                {
+                    { "MyTraitName", new List<string>() { "Value1", "MyTraitValue" } },
+                    { "YourTraitName", new List<string>() { "Value1" } }
+                }
+            };
+        }
+
+#if NET35
+
+
+        [Fact()]
+        public void TestMatch()
+        {
+            foreach (object[] data in GetMatchTestData())
+            {
+                var expect = (bool)data[0];
+                var filter = data[1] as Filter;
+                var assemblyLocation = data[2] as string;
+                var testCase = data[3] as string;
+                var testClass = data[4] as string;
+                var traits = data[5] as Dictionary<string, List<string>>;
+                this.AssertsTestMatch(expect, filter, assemblyLocation, testCase, testClass, traits);
+            }
+        }
+
+#else
+
+        [Theory(), MemberData(nameof(GetMatchTestData))]
+        public void TestMatch(bool expect,
+            Filter filter,
+            string assemblyLocation, 
+            string testCase, 
+            string testClass, 
+            Dictionary<string, List<string>> traits)
+        {
+            this.AssertsTestMatch(expect, filter, assemblyLocation, testCase, testClass, traits);
+        }
+
+#endif
+
+        protected void AssertsTestMatch(bool expect, 
+            Filter filter,
+            string assemblyLocation, 
+            string testCase, 
+            string testClass, 
+            Dictionary<string, List<string>> traits)
+        {
+            Assert.Equal(expect, filter.Match(assemblyLocation, testCase, testClass, traits));
+        }
     }
 }

@@ -212,17 +212,21 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 return true;
             }
 
+            var testCaseName = testCase?.DisplayName;
+            var testClassName = testCase?.TestMethod?.TestClass?.Class?.Name;
+            var traits = testCase.Traits;
+
             //
             // if explicit exclude...
             //
-            var excluded = this.Exclude.FirstOrDefault(filter => filter.Match(assemblyLocation, testCase)) != null;
+            var excluded = this.Exclude.FirstOrDefault(filter => filter.Match(assemblyLocation, testCaseName, testClassName, traits)) != null;
             if (excluded)
             {
                 return false;
             }
 
 
-            return this.Include.FirstOrDefault(filter => filter.Match(assemblyLocation, testCase)) != null;
+            return this.Include.FirstOrDefault(filter => filter.Match(assemblyLocation, testCaseName, testClassName, traits)) != null;
         }
 
         /// <summary>

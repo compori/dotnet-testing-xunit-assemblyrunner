@@ -157,9 +157,11 @@ namespace Compori.Testing.Xunit.AssemblyRunner
             //
             // Trait matching
             //
+
+            // Trait name set: traits parameter must contain key!
             if (!string.IsNullOrEmpty(this.TraitName))
             {
-                if(traits == null)
+                if (traits == null)
                 {
                     return false;
                 }
@@ -168,28 +170,32 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 {
                     return false;
                 }
+            }
 
-                if (!string.IsNullOrEmpty(this.TraitValue) && !traits[this.TraitName].Contains(this.TraitValue))
+            // Trait name and value set: both must match in traits parameter!
+            if (!string.IsNullOrEmpty(this.TraitName) 
+                && !string.IsNullOrEmpty(this.TraitValue)
+                && !traits[this.TraitName].Contains(this.TraitValue))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(this.TraitValue))
+            {
+                // Traits not set
+                if (traits == null)
+                {
+                    return false;
+                }
+
+                // value not found in values lists
+                if (traits.Values.FirstOrDefault(v => v.Contains(this.TraitValue)) == null)
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Matches the specified assembly location.
-        /// </summary>
-        /// <param name="assemblyLocation">The assembly location.</param>
-        /// <param name="testCase">The test case.</param>
-        /// <returns><c>true</c> if filter matches test case, <c>false</c> otherwise.</returns>
-        public bool Match(string assemblyLocation, ITestCase testCase)
-        {
-            return this.Match(assemblyLocation,
-                testCase?.DisplayName,
-                testCase?.TestMethod?.TestClass?.Class?.Name,
-                testCase?.Traits);
         }
     }
 }
