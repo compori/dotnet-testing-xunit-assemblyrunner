@@ -46,6 +46,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 this.results.Add(result.AssemblyLocation, result);
             }
         }
+
         /// <summary>
         /// Adds the specified result.
         /// </summary>
@@ -120,35 +121,5 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 }
             }
         }
-
-        /// <summary>
-        /// Gets the results for each Assembly.
-        /// </summary>
-        /// <value>The results.</value>
-        IList<IResult> IResultSummary.Results => this.Results;
-
-        /// <summary>
-        /// Gets the total tests count.
-        /// </summary>
-        /// <value>The total.</value>
-        int IResultSummary.Total => this.Total;
-
-        /// <summary>
-        /// Gets the failed tests count.
-        /// </summary>
-        /// <value>The failed.</value>
-        int IResultSummary.Failed => this.Failed;
-
-        /// <summary>
-        /// Gets the skipped tests count.
-        /// </summary>
-        /// <value>The tests skipped.</value>
-        int IResultSummary.Skipped => this.Skipped;
-
-        /// <summary>
-        /// Gets the execution time.
-        /// </summary>
-        /// <value>The execution time.</value>
-        TimeSpan IResultSummary.ExecutionTime => this.ExecutionTime;
     }
 }
