@@ -18,6 +18,11 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <returns>Filter.</returns>
         public Filter Parse(string line)
         {
+            if(line == null)
+            {
+                return null;
+            }
+
             line = line.Trim();
 
             //
@@ -56,9 +61,9 @@ namespace Compori.Testing.Xunit.AssemblyRunner
             {
                 var testTrait = line.Substring(traitKey.Length).Trim();
                 var split = testTrait.Split(new char[] { '=' }, 2);
-                var splitKey = "";
-                var splitValue = "";
-                if (split.Length == 1)
+                string splitKey = null;
+                string splitValue = null;
+                if (split.Length >= 1)
                 {
                     splitKey = split[0].Trim();
                 }
@@ -66,10 +71,17 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 {
                     splitValue = split[1].Trim();
                 }
+                var name = string.IsNullOrEmpty(splitKey) ? null : splitKey;
+                var value = string.IsNullOrEmpty(splitValue) ? null : splitValue;
+
+                if( name == null && value == null)
+                {
+                    return null;
+                }
                 return new Filter
                 {
-                    TraitName = splitKey,
-                    TraitValue = splitKey
+                    TraitName = name,
+                    TraitValue = value
                 };
             }
 
