@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net35;net461;netcoreapp2.1</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+    <PackageReference Include="xunit" Version="1.9.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net35'">
+    <PackageReference Include="xunit" Version="2.4.1" />
+  </ItemGroup>
+
+</Project>

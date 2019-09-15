@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AssemblyRunner\AssemblyRunner.csproj" />
+    <ProjectReference Include="..\..\tests-sample\SampleTest\SampleTest.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net35'">

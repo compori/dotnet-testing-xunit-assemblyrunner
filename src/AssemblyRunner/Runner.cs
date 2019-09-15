@@ -14,10 +14,32 @@ namespace Compori.Testing.Xunit.AssemblyRunner
     public class Runner
     {
         /// <summary>
+        /// The lock object
+        /// </summary>
+        private readonly object lockObj = new object();
+
+        /// <summary>
         /// Gets the current runner state.
         /// </summary>
         /// <value>The state.</value>
         public RunnerState State { get; private set; } = RunnerState.Idle;
+
+        /// <summary>
+        /// Tries the set runner state running.
+        /// </summary>
+        /// <returns><c>true</c> if state could be set to running, <c>false</c> otherwise.</returns>
+        private bool TrySetRunnerStateRunning()
+        {
+            lock (lockObj)
+            {
+                if(this.State != RunnerState.Idle)
+                {
+                    return false;
+                }
+                this.State = RunnerState.Running;
+                return true;
+            }
+        }
 
         /// <summary>
         /// The test results.
@@ -50,6 +72,12 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// The assembly locations
         /// </summary>
         private readonly List<string> assemblyLocations;
+
+        /// <summary>
+        /// Gets the assembly locations.
+        /// </summary>
+        /// <value>The assembly locations.</value>
+        public IList<string> AssemblyLocations { get => assemblyLocations.AsReadOnly(); }
 
         /// <summary>
         /// The factory
@@ -161,6 +189,8 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         private void OnTestFinishedInternal(Result result, TestFinishedInfo info)
         {
             result.AddFinishedTest(info);
+
+            this.OnTestFinished?.Invoke(result, info);
         }
 
         /// <summary>
@@ -207,17 +237,17 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <returns><c>true</c> if test should be executed, <c>false</c> otherwise.</returns>
         private bool Filter(string assemblyLocation, ITestCase testCase)
         {
+            var testCaseName = testCase.DisplayName;
+            var testClassName = testCase.TestMethod.TestClass.Class.Name;
+            var traits = testCase.Traits;
+
             //
             // No filtering active. The default behavior is to execute all discovered filters.
             //
-            if(this.Exclude.Count == 0 && this.Include.Count == 0)
+            if (this.Exclude.Count == 0 && this.Include.Count == 0)
             {
                 return true;
             }
-
-            var testCaseName = testCase?.DisplayName;
-            var testClassName = testCase?.TestMethod?.TestClass?.Class?.Name;
-            var traits = testCase.Traits;
 
             //
             // if explicit exclude...
@@ -228,6 +258,13 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 return false;
             }
 
+            //
+            // None explicit included, include all!
+            //
+            if(this.Include.Count == 0)
+            {
+                return true;
+            }
 
             return this.Include.FirstOrDefault(filter => filter.Match(assemblyLocation, testCaseName, testClassName, traits)) != null;
         }
@@ -237,8 +274,12 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// </summary>
         public void Execute()
         {
+            if (!this.TrySetRunnerStateRunning())
+            {
+                return;
+            }
+
             this.summary = new ResultSummary();
-            this.State = RunnerState.Running;
 
             try
             {
@@ -279,13 +320,11 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                         }
                     }
                 }
-
                 this.State = RunnerState.Complete;
-
-                this.OnComplete?.Invoke(this.summary);
             }
             finally
             {
+                this.OnComplete?.Invoke(this.summary);
                 this.State = RunnerState.Idle;
             }
         }
