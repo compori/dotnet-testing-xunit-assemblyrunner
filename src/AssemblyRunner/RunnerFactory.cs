@@ -18,6 +18,13 @@ namespace Compori.Testing.Xunit.AssemblyRunner
         /// <summary>
         /// Initializes a new instance of the <see cref="RunnerFactory"/> class.
         /// </summary>
+        public RunnerFactory() : this(new XunitAssemblyRunnerFactory())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RunnerFactory"/> class.
+        /// </summary>
         /// <param name="factory">The factory.</param>
         public RunnerFactory(IXunitAssemblyRunnerFactory factory)
         {

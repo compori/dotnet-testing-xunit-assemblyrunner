@@ -11,7 +11,7 @@ namespace Compori.Testing.Xunit.AssemblyRunner
     /// <summary>
     /// Class Runner.
     /// </summary>
-    public class Runner
+    public class Runner : IDisposable
     {
         /// <summary>
         /// The lock object
@@ -328,5 +328,37 @@ namespace Compori.Testing.Xunit.AssemblyRunner
                 this.State = RunnerState.Idle;
             }
         }
+
+        #region IDisposable Support
+
+        /// <summary>
+        /// The disposed value
+        /// </summary>
+        private bool disposedValue = false;
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+#if !NET35
+                this.finished?.Dispose();
+#endif
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+#endregion
     }
 }
