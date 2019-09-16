@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net35;net461;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.3.0</VersionPrefix>
     <Authors>Martin Monnier</Authors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RepositoryUrl>https://github.com/compori/dotnet-testing-xunit-assemblyrunner</RepositoryUrl>
@@ -31,13 +31,13 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <!-- <PackageReference Include="xunit" Version="2.4.1" /> -->
     <PackageReference Include="xunit.runner.utility">
       <Version>2.4.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="xunit" Version="2.4.2-pre.build.4112" />
+    <!-- <PackageReference Include="xunit" Version="2.4.2-pre.build.4112" /> -->    
     <PackageReference Include="xunit.runner.utility">
       <Version>2.4.2-pre.build.4112</Version>
     </PackageReference>
